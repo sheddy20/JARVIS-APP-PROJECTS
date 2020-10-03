@@ -1,93 +1,49 @@
-import 'dart:io';
-
+import 'package:Jarvis/Widget/detailScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker_gallery_camera/image_picker_gallery_camera.dart';
 
-class Example extends StatefulWidget {
-  Example({Key key}) : super(key: key);
+class Home extends StatefulWidget {
   @override
-  _ExampleState createState() => _ExampleState();
+  _HomeState createState() => _HomeState();
 }
 
-class _ExampleState extends State<Example> {
-  File _image;
-
-  Future getMyImage(ImgSource source) async {
-    var myImage = await ImagePickerGC.pickImage(
-      context: context,
-      source: source,
-      cameraIcon: Icon(
-        Icons.camera_alt,
-        color: Colors.pinkAccent[200],
-      ),
-      cameraText: Text(
-        'Select Image From Camera',
-        style: TextStyle(color: Colors.black),
-      ),
-      galleryText: Text(
-        'Select Image From Gallery',
-        style: TextStyle(
-          color: Colors.black,
-        ),
-      ),
-    );
-    setState(() {
-      _image = myImage;
-    });
-  }
-
+class _HomeState extends State<Home> {
+  List<String> myItemsList = [
+    'Text Scanner',
+    'Face detection',
+    'Barcode Scanner',
+    'Label Scanner',
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz App'),
-        backgroundColor: Colors.deepPurpleAccent[400],
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
-        ],
+        title: Text(''),
+        backgroundColor: Colors.pinkAccent[200],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 300,
-                child: RaisedButton(
-                  onPressed: () => getMyImage(ImgSource.Gallery),
-                  child: Text('from gallery'.toUpperCase()),
-                  color: Colors.pinkAccent[200],
-                  textColor: Colors.white,
+      body: ListView.builder(
+        itemCount: myItemsList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              title: Text(
+                myItemsList[index],
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Container(
-                width: 300,
-                child: RaisedButton(
-                  onPressed: () => getMyImage(ImgSource.Camera),
-                  child: Text('from camera'.toUpperCase()),
-                  color: Colors.pinkAccent[200],
-                  textColor: Colors.white,
-                ),
-              ),
-              Container(
-                width: 300,
-                child: RaisedButton(
-                  onPressed: () => getMyImage(ImgSource.Both),
-                  child: Text('from both'.toUpperCase()),
-                  color: Colors.pinkAccent[200],
-                  textColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => DetailScreen(),
+                  ),
+                );
+              },
+              leading: Icon(Icons.add),
+            ),
+          );
+        },
       ),
     );
   }

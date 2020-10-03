@@ -1,5 +1,6 @@
-import 'package:Jarvis/Widget/home.dart';
 import 'package:flutter/material.dart';
+
+import 'Widget/home.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Jarvis',
       debugShowCheckedModeBanner: false,
-      home: Example(),
+      home: Home(),
     );
   }
 }
