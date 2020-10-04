@@ -34,9 +34,11 @@ class _HomeState extends State<Home> {
                 ),
               ),
               onTap: () {
-                Navigator.of(context).push(
+                Navigator.push(
+                  context,
                   MaterialPageRoute(
                     builder: (_) => DetailScreen(),
+                    settings: RouteSettings(arguments: myItemsList[index]),
                   ),
                 );
               },

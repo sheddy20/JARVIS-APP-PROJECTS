@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker_gallery_camera/image_picker_gallery_camera.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'home.dart';
 
@@ -18,12 +18,13 @@ class _DetailScreenState extends State<DetailScreen> {
 
   bool isImageLoaded = false;
 
+  String itemSelected = '';
+
   var result = '';
 
   void _getMyImages() async {
-    var images = await ImagePickerGC.pickImage(
-      context: context,
-      source: ImgSource.Gallery,
+    var images = await ImagePicker().getImage(
+      source: ImageSource.camera,
     );
 
     setState(() {
@@ -32,7 +33,7 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
-  void _readText() async {
+  Future readText() async {
     result = '';
     FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
     TextRecognizer recognizeText = FirebaseVision.instance.textRecognizer();
@@ -49,11 +50,50 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
+  Future scanBarcodes() async {
+    result = '';
+    FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
+    BarcodeDetector recognizeBarcode =
+        FirebaseVision.instance.barcodeDetector();
+    List barcode = await recognizeBarcode.detectInImage(myImages);
+
+    for (Barcode readableCode in barcode) {
+      setState(() {
+        result = readableCode.displayValue;
+      });
+    }
+  }
+
+  Future myImageLabler() async {
+    result = '';
+    FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
+    ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
+    List labels = await labeler.processImage(myImages);
+    for (ImageLabel label in labels) {
+      final String text = label.text;
+      final double confidence = label.confidence;
+      setState(() {
+        result = result + '  ' + '$text       $confidence' + '\n';
+      });
+      print('$text    -   $confidence');
+    }
+  }
+
+  Future myFaceDetector() async {}
+
   @override
   Widget build(BuildContext context) {
+    itemSelected = ModalRoute.of(context).settings.arguments.toString();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bluebook'),
+        title: Text(
+          itemSelected,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.pinkAccent[200],
         actions: [
           IconButton(
@@ -150,10 +190,10 @@ class _DetailScreenState extends State<DetailScreen> {
             isImageLoaded
                 ? Center(
                     child: Container(
-                      height: 250.0,
-                      width: 250.0,
+                      height: 350.0,
+                      width: 300.0,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(15.0),
                         color: Colors.pinkAccent[200],
                         image: DecorationImage(
                           image: FileImage(myImage),
@@ -164,12 +204,19 @@ class _DetailScreenState extends State<DetailScreen> {
                   )
                 : Container(),
             SizedBox(height: 50.0),
-            Text(result),
+            Text(
+              result,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _readText,
+        onPressed: myImageLabler,
         backgroundColor: Colors.pinkAccent[200],
         tooltip: 'add an image',
         child: Icon(Icons.check),
