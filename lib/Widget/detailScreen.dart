@@ -3,10 +3,8 @@ import 'dart:async';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 
-import 'home.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DetailScreen extends StatefulWidget {
   @override
@@ -28,7 +26,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   void _getMyImages() async {
     var images = await ImagePicker().getImage(
-      source: ImageSource.camera,
+      source: ImageSource.gallery,
     );
 
     myImageFile = await images.readAsBytes();
