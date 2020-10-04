@@ -127,7 +127,7 @@ class _DetailScreenState extends State<DetailScreen> {
           itemSelected,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 28.0,
+            fontSize: 20.0,
             fontWeight: FontWeight.bold,
           ),
         ),
