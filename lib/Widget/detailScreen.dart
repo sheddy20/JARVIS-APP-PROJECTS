@@ -3,8 +3,10 @@ import 'dart:async';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailScreen extends StatefulWidget {
   @override
@@ -39,6 +41,78 @@ class _DetailScreenState extends State<DetailScreen> {
 
       myImageFile = myImageFile;
     });
+  }
+
+  void launchUrl1() async {
+    const url = 'https://facebook.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl2() async {
+    const url = 'https://twitter.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl3() async {
+    const url = 'https://youtube.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl4() async {
+    const url = 'https://github.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl5() async {
+    const url = 'https://stackoverflow.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl6() async {
+    const url = 'https://medium.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl7() async {
+    const url = 'https://freecodecamp.org';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
+  }
+
+  void launchUrl8() async {
+    const url = 'https://linkedin.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not Launch url';
+    }
   }
 
   void readText() async {
@@ -132,16 +206,110 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
         ),
         backgroundColor: Colors.deepPurpleAccent[400],
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add_a_photo),
             onPressed: _getMyImages,
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text('Abel Shedrack Nicholas'),
+              accountEmail: Text('Shedrackabel42@gmail.com'),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: AssetImage('Assets/Images/shedrack.jpg'),
+                radius: 50.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.deepPurpleAccent[400],
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Account'),
+                onTap: () {},
+                leading: Icon(Icons.account_circle),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Settings'),
+                onTap: () {},
+                leading: Icon(Icons.settings),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Facebook'),
+                onTap: launchUrl1,
+                leading: Icon(FontAwesomeIcons.facebook),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Medium'),
+                onTap: launchUrl6,
+                leading: Icon(FontAwesomeIcons.medium),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Twitter'),
+                onTap: launchUrl2,
+                leading: Icon(FontAwesomeIcons.twitter),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Github'),
+                onTap: launchUrl4,
+                leading: Icon(FontAwesomeIcons.github),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('Youtube'),
+                onTap: launchUrl3,
+                leading: Icon(FontAwesomeIcons.youtube),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('StackOverflow'),
+                onTap: launchUrl5,
+                leading: Icon(FontAwesomeIcons.stackOverflow),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('FreeCodeCamp'),
+                onTap: launchUrl7,
+                leading: Icon(FontAwesomeIcons.freeCodeCamp),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('LinkedIn'),
+                onTap: launchUrl8,
+                leading: Icon(FontAwesomeIcons.linkedin),
+                trailing: Icon(Icons.more_vert),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
