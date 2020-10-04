@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,11 @@ class _DetailScreenState extends State<DetailScreen> {
   var myImageFile;
 
   bool isImageLoaded = false;
+  bool isFaceDetected = false;
 
   String itemSelected = '';
+
+  List<Rect> rect = new List<Rect>();
 
   var result = '';
 
@@ -27,13 +31,19 @@ class _DetailScreenState extends State<DetailScreen> {
       source: ImageSource.camera,
     );
 
+    myImageFile = await images.readAsBytes();
+    myImageFile = await decodeImageFromList(myImageFile);
+
     setState(() {
       myImage = File(images.path);
       isImageLoaded = true;
+      isFaceDetected = false;
+
+      myImageFile = myImageFile;
     });
   }
 
-  Future readText() async {
+  void readText() async {
     result = '';
     FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
     TextRecognizer recognizeText = FirebaseVision.instance.textRecognizer();
@@ -50,7 +60,7 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
-  Future scanBarcodes() async {
+  void scanBarcodes() async {
     result = '';
     FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
     BarcodeDetector recognizeBarcode =
@@ -64,7 +74,7 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
-  Future myImageLabler() async {
+  void myImageLabler() async {
     result = '';
     FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
     ImageLabeler labeler = FirebaseVision.instance.imageLabeler();
@@ -79,7 +89,36 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
-  Future myFaceDetector() async {}
+  Future myFaceDetector() async {
+    FirebaseVisionImage myImages = FirebaseVisionImage.fromFile(myImage);
+    FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+    List<Face> faces = await faceDetector.processImage(myImages);
+
+    if (rect.length > 0) {
+      rect = new List<Rect>();
+    }
+
+    for (Face face in faces) {
+      rect.add(face.boundingBox);
+    }
+  }
+
+  void detectAllFeatures(String myFeatures) {
+    switch (myFeatures) {
+      case 'Text Scanner':
+        readText();
+        break;
+      case 'Barcode Scanner':
+        scanBarcodes();
+        break;
+      case 'Label Scanner':
+        myImageLabler();
+        break;
+      case 'Face Detection':
+        myFaceDetector();
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +133,11 @@ class _DetailScreenState extends State<DetailScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.pinkAccent[200],
+        backgroundColor: Colors.deepPurpleAccent[400],
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {},
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add_a_photo),
@@ -102,92 +145,11 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('Abel Nicholas'),
-              accountEmail: Text('Abelnicholas@gmail.com'),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.black,
-                radius: 50.0,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.pinkAccent[200],
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Account'),
-                leading: Icon(Icons.account_circle),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Settings'),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => Home(),
-                    ),
-                  );
-                },
-                leading: Icon(Icons.settings),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Location'),
-                leading: Icon(Icons.location_on),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Payments'),
-                leading: Icon(Icons.account_balance_wallet),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Social'),
-                leading: Icon(Icons.people),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Facebook'),
-                leading: Icon(FontAwesomeIcons.facebook),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Twitter'),
-                leading: Icon(FontAwesomeIcons.twitter),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Linkedin'),
-                leading: Icon(FontAwesomeIcons.linkedinIn),
-                trailing: Icon(Icons.more_vert),
-              ),
-            ),
-          ],
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 100.0),
-            isImageLoaded
+            isImageLoaded && !isFaceDetected
                 ? Center(
                     child: Container(
                       height: 350.0,
@@ -202,7 +164,24 @@ class _DetailScreenState extends State<DetailScreen> {
                       ),
                     ),
                   )
-                : Container(),
+                : isImageLoaded && isFaceDetected
+                    ? Center(
+                        child: Container(
+                          child: FittedBox(
+                            child: SizedBox(
+                              width: myImageFile.width.toDouble(),
+                              height: myImageFile.height.toDouble(),
+                              child: CustomPaint(
+                                painter: FacePainter(
+                                  rect: rect,
+                                  myImageFile: myImageFile,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(),
             SizedBox(height: 50.0),
             Text(
               result,
@@ -216,11 +195,42 @@ class _DetailScreenState extends State<DetailScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: myImageLabler,
-        backgroundColor: Colors.pinkAccent[200],
-        tooltip: 'add an image',
+        onPressed: () {
+          detectAllFeatures(itemSelected);
+        },
+        backgroundColor: Colors.deepPurpleAccent[400],
+        tooltip: 'Confirm',
         child: Icon(Icons.check),
       ),
     );
+  }
+}
+
+class FacePainter extends CustomPainter {
+  List<Rect> rect;
+  var myImageFile;
+
+  FacePainter({@required this.rect, @required this.myImageFile});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (myImageFile != null) {
+      canvas.drawImage(myImageFile, Offset.zero, Paint());
+    }
+
+    for (Rect rectangle in rect) {
+      canvas.drawRect(
+        rectangle,
+        Paint()
+          ..color = Colors.deepPurpleAccent
+          ..strokeWidth = 6.0
+          ..style = PaintingStyle.stroke,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    throw UnimplementedError();
   }
 }

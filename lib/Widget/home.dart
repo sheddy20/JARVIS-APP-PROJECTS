@@ -9,7 +9,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<String> myItemsList = [
     'Text Scanner',
-    'Face detection',
+    'Face Detection',
     'Barcode Scanner',
     'Label Scanner',
   ];
@@ -17,8 +17,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
-        backgroundColor: Colors.pinkAccent[200],
+        title: Text('Jarvis'),
+        backgroundColor: Colors.deepPurpleAccent[400],
+        leading: Icon(Icons.menu),
+        actions: [Icon(Icons.more_vert)],
       ),
       body: ListView.builder(
         itemCount: myItemsList.length,
